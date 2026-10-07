@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>House Price Prediction System | AI & XGBoost</title>
+  <meta name="description" content="End-to-End Machine Learning House Price Prediction System powered by Hyperparameter-Tuned XGBoost, FastAPI, PostgreSQL, and Power BI.">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Background Glow Accents -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <!-- Main Container -->
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="brand-badge">
+          <i data-lucide="home"></i>
+          <span>7TH SEMESTER CAPSTONE PROJECT</span>
+        </div>
+        <h1 class="main-title">House Price Prediction <span class="gradient-text">System</span></h1>
+        <p class="subtitle">Production-grade real estate valuation powered by Tuned <strong>XGBoost Regressor</strong> & FastAPI backend.</p>
+      </div>
+
+      <div class="header-right">
+        <div class="system-status-card" id="systemStatusBadge">
+          <div class="status-indicator online"></div>
+          <div class="status-text">
+            <span class="status-title" id="systemStatusTitle">System Online</span>
+            <span class="status-sub" id="systemStatusSub">XGBoost &bull; Ready</span>
+          </div>
+        </div>
+        <a href="/docs" target="_blank" class="api-docs-btn" title="View Swagger API Documentation">
+          <i data-lucide="file-code-2"></i>
+          <span>API Docs</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs" role="tablist">
+      <button class="nav-tab active" id="tabPredictBtn" data-target="panelPredict">
+        <i data-lucide="calculator"></i>
+        <span>Price Predictor</span>
+      </button>
+      <button class="nav-tab" id="tabHistoryBtn" data-target="panelHistory">
+        <i data-lucide="history"></i>
+        <span>Prediction Records</span>
+      </button>
+      <button class="nav-tab" id="tabModelsBtn" data-target="panelModels">
+        <i data-lucide="bar-chart-3"></i>
+        <span>Model Comparison</span>
+      </button>
+      <button class="nav-tab" id="tabArchitectureBtn" data-target="panelArchitecture">
+        <i data-lucide="git-merge"></i>
+        <span>System Architecture</span>
+      </button>
+    </nav>
+
+    <!-- MAIN PANELS -->
+    <main class="main-content">
+      <!-- PANEL 1: PREDICTOR -->
+      <section class="tab-panel active" id="panelPredict">
+        <div class="predictor-grid">
+          <!-- Form Section -->
+          <div class="card form-card">
+            <div class="card-header">
+              <div class="header-title-group">
+                <i data-lucide="sliders" class="header-icon"></i>
+                <div>
+                  <h2 class="card-title">Property Characteristics</h2>
+                  <p class="card-desc">Specify property dimensions, room distribution, and amenities.</p>
+                </div>
+              </div>
+              <div class="preset-dropdown-wrap">
+                <span class="preset-label">Quick Presets:</span>
+                <button type="button" class="preset-chip" id="presetLuxury">Luxury Villa</button>
+                <button type="button" class="preset-chip" id="presetFamily">Family Home</button>
+                <button type="button" class="preset-chip" id="presetBudget">Compact</button>
+              </div>
+            </div>
+
+            <form id="pricePredictForm" class="prediction-form" novalidate>
+              <!-- Numerical Features Row -->
+              <div class="form-section-title">
+                <i data-lucide="maximize-2"></i>
+                <span>Dimensions & Room Configuration</span>
+              </div>
+
+              <div class="form-row-grid">
+                <!-- Area -->
+                <div class="form-group full-width">
+                  <div class="label-with-val">
+                    <label for="inputArea">Total Carpet Area</label>
+                    <span class="value-badge" id="areaDisplay">7,420 sq. ft</span>
+                  </div>
+                  <div class="range-container">
+                    <input type="range" id="inputAreaRange" min="1000" max="16000" step="50" value="7420" class="custom-slider">
+                    <div class="number-input-wrapper">
+                      <input type="number" id="inputArea" name="area" min="500" max="30000" value="7420" required class="form-input">
+                      <span class="input-suffix">sq. ft</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Bedrooms -->
+                <div class="form-group">
+                  <label for="inputBedrooms">Bedrooms</label>
+                  <div class="stepper-input">
+                    <button type="button" class="step-btn" data-step="-1" data-target="inputBedrooms">&minus;</button>
+                    <input type="number" id="inputBedrooms" name="bedrooms" min="1" max="10" value="4" class="stepper-val" readonly>
+                    <button type="button" class="step-btn" data-step="1" data-target="inputBedrooms">&plus;</button>
+                  </div>
+                </div>
+
+                <!-- Bathrooms -->
+                <div class="form-group">
+                  <label for="inputBathrooms">Bathrooms</label>
+                  <div class="stepper-input">
+                    <button type="button" class="step-btn" data-step="-1" data-target="inputBathrooms">&minus;</button>
+                    <input type="number" id="inputBathrooms" name="bathrooms" min="1" max="6" value="2" class="stepper-val" readonly>
+                    <button type="button" class="step-btn" data-step="1" data-target="inputBathrooms">&plus;</button>
+                  </div>
+                </div>
+
+                <!-- Stories -->
+                <div class="form-group">
+                  <label for="inputStories">Stories / Floors</label>
+                  <div class="stepper-input">
+                    <button type="button" class="step-btn" data-step="-1" data-target="inputStories">&minus;</button>
+                    <input type="number" id="inputStories" name="stories" min="1" max="4" value="3" class="stepper-val" readonly>
+                    <button type="button" class="step-btn" data-step="1" data-target="inputStories">&plus;</button>
+                  </div>
+                </div>
+
+                <!-- Parking -->
+                <div class="form-group">
+                  <label for="inputParking">Parking Spaces</label>
+                  <div class="stepper-input">
+                    <button type="button" class="step-btn" data-step="-1" data-target="inputParking">&minus;</button>
+                    <input type="number" id="inputParking" name="parking" min="0" max="4" value="2" class="stepper-val" readonly>
+                    <button type="button" class="step-btn" data-step="1" data-target="inputParking">&plus;</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Furnishing Status Cards -->
+              <div class="form-section-title">
+                <i data-lucide="sofa"></i>
+                <span>Furnishing Status</span>
+              </div>
+              <div class="furnishing-options" id="furnishingOptions">
+                <label class="furnishing-card active" data-val="furnished">
+                  <input type="radio" name="furnishingstatus" value="furnished" checked class="sr-only">
+                  <i data-lucide="sparkles"></i>
+                  <span class="furnish-title">Furnished</span>
+                  <span class="furnish-desc">Fully equipped with premium fittings</span>
+                </label>
+                <label class="furnishing-card" data-val="semi-furnished">
+                  <input type="radio" name="furnishingstatus" value="semi-furnished" class="sr-only">
+                  <i data-lucide="armchair"></i>
+                  <span class="furnish-title">Semi-Furnished</span>
+                  <span class="furnish-desc">Essential woodwork and lights installed</span>
+                </label>
+                <label class="furnishing-card" data-val="unfurnished">
+                  <input type="radio" name="furnishingstatus" value="unfurnished" class="sr-only">
+                  <i data-lucide="box"></i>
+                  <span class="furnish-title">Unfurnished</span>
+                  <span class="furnish-desc">Bare shell ready for custom interior</span>
+                </label>
+              </div>
+
+              <!-- Amenities / Features Toggles -->
+              <div class="form-section-title">
+                <i data-lucide="check-circle-2"></i>
+                <span>Amenities & Location Features</span>
+              </div>
+              <div class="toggles-grid">
+                <!-- Main Road -->
+                <label class="toggle-card">
+                  <input type="checkbox" id="checkMainroad" name="mainroad" checked>
+                  <div class="toggle-content">
+                    <div class="toggle-icon"><i data-lucide="navigation"></i></div>
+                    <div class="toggle-labels">
+                      <span class="toggle-title">Main Road Access</span>
+                      <span class="toggle-subtitle">Direct connectivity</span>
+                    </div>
+                  </div>
+                  <div class="toggle-switch"></div>
+                </label>
+
+                <!-- Air Conditioning -->
+                <label class="toggle-card">
+                  <input type="checkbox" id="checkAC" name="airconditioning" checked>
+                  <div class="toggle-content">
+                    <div class="toggle-icon"><i data-lucide="wind"></i></div>
+                    <div class="toggle-labels">
+                      <span class="toggle-title">Air Conditioning</span>
+                      <span class="toggle-subtitle">Central / Split climate control</span>
+                    </div>
+                  </div>
+                  <div class="toggle-switch"></div>
+                </label>
+
+                <!-- Preferred Area -->
+                <label class="toggle-card">
+                  <input type="checkbox" id="checkPrefarea" name="prefarea" checked>
+                  <div class="toggle-content">
+                    <div class="toggle-icon"><i data-lucide="map-pin"></i></div>
+                    <div class="toggle-labels">
+                      <span class="toggle-title">Preferred Area</span>
+                      <span class="toggle-subtitle">Prime residential locality</span>
+                    </div>
+                  </div>
+                  <div class="toggle-switch"></div>
+                </label>
+
+                <!-- Guest Room -->
+                <label class="toggle-card">
+                  <input type="checkbox" id="checkGuestroom" name="guestroom">
+                  <div class="toggle-content">
+                    <div class="toggle-icon"><i data-lucide="users"></i></div>
+                    <div class="toggle-labels">
+                      <span class="toggle-title">Guest Room</span>
+                      <span class="toggle-subtitle">Dedicated visitor quarters</span>
+                    </div>
+                  </div>
+                  <div class="toggle-switch"></div>
+                </label>
+
+                <!-- Basement -->
+                <label class="toggle-card">
+                  <input type="checkbox" id="checkBasement" name="basement">
+                  <div class="toggle-content">
+                    <div class="toggle-icon"><i data-lucide="layers"></i></div>
+                    <div class="toggle-labels">
+                      <span class="toggle-title">Basement</span>
+                      <span class="toggle-subtitle">Underground level space</span>
+                    </div>
+                  </div>
+                  <div class="toggle-switch"></div>
+                </label>
+
+                <!-- Hot Water Heating -->
+                <label class="toggle-card">
+                  <input type="checkbox" id="checkHotwater" name="hotwaterheating">
+                  <div class="toggle-content">
+                    <div class="toggle-icon"><i data-lucide="flame"></i></div>
+                    <div class="toggle-labels">
+                      <span class="toggle-title">Hot Water Heating</span>
+                      <span class="toggle-subtitle">Geyser / Solar heating</span>
+                    </div>
+                  </div>
+                  <div class="toggle-switch"></div>
+                </label>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="form-action-row">
+                <button type="submit" id="btnPredictPrice" class="btn-primary-glow">
+                  <i data-lucide="zap" class="btn-icon"></i>
+                  <span id="btnPredictText">Calculate House Price</span>
+                  <div class="spinner hidden" id="predictSpinner"></div>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Result & Intelligence Card -->
+          <div class="result-column">
+            <!-- Price Result Card -->
+            <div class="card result-card" id="resultCard">
+              <div class="result-badge">
+                <i data-lucide="check"></i>
+                <span>XGBOOST ML PREDICTION</span>
+              </div>
+              <div class="result-heading">Estimated Property Value</div>
+              
+              <div class="price-display-wrap">
+                <span class="price-currency">₹</span>
+                <span class="price-amount" id="displayPredictedPrice">98,30,081</span>
+              </div>
+
+              <div class="price-subtitle-badge" id="displayPriceWords">
+                Approximately 98.30 Lakh INR
+              </div>
+
+              <!-- Metrics Breakdown -->
+              <div class="price-stats-grid">
+                <div class="stat-pill">
+                  <span class="stat-label">Rate / Sq. Ft</span>
+                  <span class="stat-val" id="statRatePerSqft">₹ 1,324</span>
+                </div>
+                <div class="stat-pill">
+                  <span class="stat-label">Total Rooms</span>
+                  <span class="stat-val" id="statTotalRooms">6 Rooms</span>
+                </div>
+                <div class="stat-pill">
+                  <span class="stat-label">Confidence Range</span>
+                  <span class="stat-val" id="statRange">₹ 93.3L &ndash; 1.03Cr</span>
+                </div>
+                <div class="stat-pill">
+                  <span class="stat-label">Database Record</span>
+                  <span class="stat-val" id="statRecordId"># Saved in DB</span>
+                </div>
+              </div>
+
+              <!-- Feature engineered insights -->
+              <div class="engineered-features-box">
+                <div class="box-title">
+                  <i data-lucide="cpu"></i>
+                  <span>Model Engineered Features</span>
+                </div>
+                <div class="derived-item">
+                  <span>Area per Room:</span>
+                  <strong id="featAreaPerRoom">1,236.7 sq ft</strong>
+                </div>
+                <div class="derived-item">
+                  <span>Bathroom-to-Bedroom Ratio:</span>
+                  <strong id="featBathBedRatio">0.50</strong>
+                </div>
+                <div class="derived-item">
+                  <span>Locality Factor:</span>
+                  <strong id="featLocality">Prime + Main Road</strong>
+                </div>
+              </div>
+
+              <!-- Quick action -->
+              <div class="result-footer">
+                <button type="button" class="btn-secondary" id="btnSharePrediction">
+                  <i data-lucide="copy"></i>
+                  <span>Copy Valuation Summary</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Model Info Quick Widget -->
+            <div class="card mini-info-card">
+              <div class="mini-card-header">
+                <i data-lucide="shield-check" class="text-success"></i>
+                <span class="mini-title">Model Verification</span>
+              </div>
+              <p class="mini-desc">5-fold cross-validated XGBoost regressor trained with regularization (reg_alpha=0.1, reg_lambda=2.0) to prevent overfitting.</p>
+              <div class="mini-meta">
+                <span>R² Score: <strong>0.632</strong></span>
+                <span>MAE: <strong>₹10.06L</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANEL 2: PREDICTION RECORDS (HISTORY) -->
+      <section class="tab-panel" id="panelHistory">
+        <div class="card history-card">
+          <div class="card-header space-between">
+            <div class="header-title-group">
+              <i data-lucide="database" class="header-icon"></i>
+              <div>
+                <h2 class="card-title">Database Prediction History</h2>
+                <p class="card-desc">Persistent logs stored in PostgreSQL / SQLite database.</p>
+              </div>
+            </div>
+            <button class="btn-refresh" id="btnRefreshHistory">
+              <i data-lucide="refresh-cw"></i>
+              <span>Refresh Records</span>
+            </button>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table" id="historyTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Area (sq.ft)</th>
+                  <th>Bedrooms</th>
+                  <th>Bathrooms</th>
+                  <th>Stories</th>
+                  <th>Parking</th>
+                  <th>AC</th>
+                  <th>Pref Area</th>
+                  <th>Furnishing</th>
+                  <th>Predicted Price</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody">
+                <tr>
+                  <td colspan="11" class="text-center py-4">Loading prediction records...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANEL 3: MODEL COMPARISON -->
+      <section class="tab-panel" id="panelModels">
+        <div class="models-grid">
+          <div class="card comparison-card full-width">
+            <div class="card-header">
+              <div class="header-title-group">
+                <i data-lucide="trophy" class="header-icon"></i>
+                <div>
+                  <h2 class="card-title">Machine Learning Algorithm Benchmarks</h2>
+                  <p class="card-desc">Comparison of all 5 candidate regression models evaluated on held-out test data.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Regression Model</th>
+                    <th>MAE (Mean Abs Error)</th>
+                    <th>RMSE (Root Mean Sq)</th>
+                    <th>R² Score</th>
+                    <th>MAPE (%)</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="modelComparisonTableBody">
+                  <!-- Dynamically populated or static baseline -->
+                  <tr class="highlight-row">
+                    <td><span class="rank-badge gold">1</span></td>
+                    <td><strong>XGBoost Regressor (Tuned)</strong></td>
+                    <td>₹10,06,918</td>
+                    <td>₹13,63,534</td>
+                    <td><span class="badge-r2">0.6322</span></td>
+                    <td>21.62%</td>
+                    <td><span class="pill-active">Selected for Production</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="rank-badge silver">2</span></td>
+                    <td>Linear Regression</td>
+                    <td>₹9,63,412</td>
+                    <td>₹13,15,156</td>
+                    <td><span class="badge-r2">0.6578</span></td>
+                    <td>20.95%</td>
+                    <td><span class="pill-candidate">Candidate</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="rank-badge bronze">3</span></td>
+                    <td>XGBoost (Baseline)</td>
+                    <td>₹10,24,932</td>
+                    <td>₹13,74,443</td>
+                    <td><span class="badge-r2">0.6263</span></td>
+                    <td>21.65%</td>
+                    <td><span class="pill-candidate">Candidate</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="rank-badge">4</span></td>
+                    <td>Gradient Boosting Regressor</td>
+                    <td>₹10,07,473</td>
+                    <td>₹13,82,542</td>
+                    <td><span class="badge-r2">0.6218</span></td>
+                    <td>21.38%</td>
+                    <td><span class="pill-candidate">Candidate</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="rank-badge">5</span></td>
+                    <td>Random Forest Regressor</td>
+                    <td>₹10,48,119</td>
+                    <td>₹14,32,821</td>
+                    <td><span class="badge-r2">0.5938</span></td>
+                    <td>22.21%</td>
+                    <td><span class="pill-candidate">Candidate</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="rank-badge">6</span></td>
+                    <td>Decision Tree Regressor</td>
+                    <td>₹13,70,817</td>
+                    <td>₹18,13,014</td>
+                    <td><span class="badge-r2">0.3497</span></td>
+                    <td>29.05%</td>
+                    <td><span class="pill-overfit">High Variance</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Hyperparameters tuned block -->
+            <div class="hyperparams-card">
+              <h3 class="hyper-title"><i data-lucide="settings-2"></i> Optimal XGBoost Hyperparameters (5-Fold CV)</h3>
+              <div class="params-chips-grid" id="hyperparamsGrid">
+                <div class="param-chip"><span>n_estimators:</span> <strong>100</strong></div>
+                <div class="param-chip"><span>learning_rate:</span> <strong>0.05</strong></div>
+                <div class="param-chip"><span>max_depth:</span> <strong>4</strong></div>
+                <div class="param-chip"><span>subsample:</span> <strong>0.8</strong></div>
+                <div class="param-chip"><span>colsample_bytree:</span> <strong>0.8</strong></div>
+                <div class="param-chip"><span>reg_alpha (L1):</span> <strong>0.1</strong></div>
+                <div class="param-chip"><span>reg_lambda (L2):</span> <strong>2.0</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANEL 4: SYSTEM ARCHITECTURE -->
+      <section class="tab-panel" id="panelArchitecture">
+        <div class="card architecture-card">
+          <div class="card-header">
+            <div class="header-title-group">
+              <i data-lucide="network" class="header-icon"></i>
+              <div>
+                <h2 class="card-title">System Architecture & Pipeline Flow</h2>
+                <p class="card-desc">End-to-end engineering specification matching project documentation.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="arch-flow">
+            <div class="arch-step">
+              <div class="step-num">01</div>
+              <div class="step-icon"><i data-lucide="file-spreadsheet"></i></div>
+              <div class="step-title">Dataset / CSV</div>
+              <div class="step-desc">Housing dataset with 545 records, 13 features & price target.</div>
+            </div>
+            <div class="arch-connector">&rarr;</div>
+            <div class="arch-step">
+              <div class="step-num">02</div>
+              <div class="step-icon"><i data-lucide="filter"></i></div>
+              <div class="step-title">Preprocessing & EDA</div>
+              <div class="step-desc">Missing values, duplicate removal, one-hot & binary encoding.</div>
+            </div>
+            <div class="arch-connector">&rarr;</div>
+            <div class="arch-step">
+              <div class="step-num">03</div>
+              <div class="step-icon"><i data-lucide="cpu"></i></div>
+              <div class="step-title">Feature Engineering</div>
+              <div class="step-desc">Derived total_rooms, area_per_room, and bathroom_per_bedroom.</div>
+            </div>
+            <div class="arch-connector">&rarr;</div>
+            <div class="arch-step">
+              <div class="step-num">04</div>
+              <div class="step-icon"><i data-lucide="award"></i></div>
+              <div class="step-title">XGBoost Tuning</div>
+              <div class="step-desc">5-fold cross-validated grid search tuning saving model.pkl.</div>
+            </div>
+            <div class="arch-connector">&rarr;</div>
+            <div class="arch-step">
+              <div class="step-num">05</div>
+              <div class="step-icon"><i data-lucide="server"></i></div>
+              <div class="step-title">FastAPI Backend</div>
+              <div class="step-desc">REST API with /predict, /health, /predictions & Swagger docs.</div>
+            </div>
+            <div class="arch-connector">&rarr;</div>
+            <div class="arch-step">
+              <div class="step-num">06</div>
+              <div class="step-icon"><i data-lucide="pie-chart"></i></div>
+              <div class="step-title">PostgreSQL & Power BI</div>
+              <div class="step-desc">Persistent prediction storage and 4 interactive analytical dashboards.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>&copy; 2026 House Price Prediction System &bull; 7th Semester Capstone Project &bull; Built with FastAPI, XGBoost & PostgreSQL.</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // Initialize Lucide icons
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

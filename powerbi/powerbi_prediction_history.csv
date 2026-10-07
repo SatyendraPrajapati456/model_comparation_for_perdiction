@@ -1,0 +1,8 @@
+prediction_id,area,bedrooms,bathrooms,stories,parking,mainroad,airconditioning,prefarea,furnishingstatus,predicted_price,timestamp
+1,7420,4,2,3,2,yes,yes,yes,furnished,9830081.0,2026-09-26 01:10:00
+2,8960,4,4,4,3,yes,yes,no,furnished,11450000.0,2026-09-26 01:12:00
+3,4600,3,1,2,1,yes,yes,no,semi-furnished,4950000.0,2026-09-26 01:14:00
+4,2500,2,1,1,0,yes,no,no,unfurnished,2850000.0,2026-09-26 01:16:00
+5,6000,3,2,2,2,yes,yes,yes,semi-furnished,6800000.0,2026-09-26 01:18:00
+6,5500,4,2,2,1,no,yes,no,furnished,5750000.0,2026-09-26 01:20:00
+7,3800,3,1,1,1,yes,no,no,unfurnished,3650000.0,2026-09-26 01:22:00

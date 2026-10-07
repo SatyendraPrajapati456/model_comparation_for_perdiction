@@ -1,0 +1,56 @@
+{
+    "comparison": [
+        {
+            "Model": "Linear Regression",
+            "MAE": 963411.82,
+            "RMSE": 1315155.53,
+            "R2 Score": 0.6578,
+            "MAPE (%)": 20.95
+        },
+        {
+            "Model": "XGBoost (Tuned)",
+            "MAE": 1006918.38,
+            "RMSE": 1363533.67,
+            "R2 Score": 0.6322,
+            "MAPE (%)": 21.62
+        },
+        {
+            "Model": "XGBoost (Baseline)",
+            "MAE": 1024931.94,
+            "RMSE": 1374442.66,
+            "R2 Score": 0.6263,
+            "MAPE (%)": 21.65
+        },
+        {
+            "Model": "Gradient Boosting",
+            "MAE": 1007473.14,
+            "RMSE": 1382541.66,
+            "R2 Score": 0.6218,
+            "MAPE (%)": 21.38
+        },
+        {
+            "Model": "Random Forest",
+            "MAE": 1048119.07,
+            "RMSE": 1432821.44,
+            "R2 Score": 0.5938,
+            "MAPE (%)": 22.21
+        },
+        {
+            "Model": "Decision Tree",
+            "MAE": 1370817.06,
+            "RMSE": 1813014.08,
+            "R2 Score": 0.3497,
+            "MAPE (%)": 29.05
+        }
+    ],
+    "best_xgboost_params": {
+        "colsample_bytree": 0.8,
+        "learning_rate": 0.05,
+        "max_depth": 4,
+        "n_estimators": 100,
+        "reg_alpha": 0.1,
+        "reg_lambda": 2.0,
+        "subsample": 0.8
+    },
+    "selected_production_model": "Tuned XGBoost Regressor"
+}
